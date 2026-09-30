@@ -209,7 +209,7 @@ const CONFIG = {
   FECHA_FIN: "2027-05-28",
   MAX_FECHAS_EXTRA: 6,
   // 👇 Pega aquí tu URL de Google Apps Script
-  ENDPOINT: ""
+  ENDPOINT: "https://script.google.com/a/macros/aragon.unam.mx/s/AKfycbwvj8oqraP8fcV34wGt2cWv5jD0i6E5FHG_etfsU-iIAcURjVqINZ6LPfWVyvShL9zK/exec"
 };
 
 const DIAS_SEMANA = {
