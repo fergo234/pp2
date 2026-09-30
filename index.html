@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendarización de Prácticas 2027-II</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="bg-decor" aria-hidden="true"></div>
+
+  <main class="container">
+    <header class="header">
+      <div class="header-icon">📅</div>
+      <h1>Calendarización de Prácticas</h1>
+      <p class="subtitle">Semestre 2027-II</p>
+      <p class="lab-badge">Laboratorio L-4 · Ingeniería Civil</p>
+    </header>
+
+    <div class="intro-card">
+      <div class="intro-icon">📌</div>
+      <p>
+        <strong>Importante:</strong> Colocar los datos como se encuentran en la hoja que
+        les proporcionamos de <em>"PROPUESTA DE FECHAS DE PRÁCTICAS-PROFESOR"</em>.
+        Además, por temas de auditoría, solo se podrán seleccionar las fechas que
+        coincidan con su día que aparece en la misma hoja.
+      </p>
+      <p class="intro-note">
+        Si requiere calendarizar en fechas ajenas a su día, comunicarse con el
+        jefe de laboratorio del L-4.
+      </p>
+    </div>
+
+    <form id="formulario" novalidate>
+      <div class="field">
+        <label for="materia">Materia <span class="req">*</span></label>
+        <select id="materia" required>
+          <option value="">— Selecciona una materia —</option>
+        </select>
+        <div id="area-tag" class="area-tag" hidden></div>
+      </div>
+
+      <div class="field">
+        <label for="grupo">Grupo <span class="req">*</span></label>
+        <input type="text" id="grupo" placeholder="Ej. 1CM1" maxlength="20" required>
+      </div>
+
+      <div class="field">
+        <label for="dia">Día de clase <span class="req">*</span></label>
+        <select id="dia" required>
+          <option value="">— Selecciona un día —</option>
+          <option value="Lunes">Lunes</option>
+          <option value="Martes">Martes</option>
+          <option value="Miércoles">Miércoles</option>
+          <option value="Jueves">Jueves</option>
+          <option value="Viernes">Viernes</option>
+        </select>
+      </div>
+
+      <fieldset id="pregunta-extra" class="field radio-group" hidden>
+        <legend>¿Necesitas más de una fecha para alguna práctica? <span class="req">*</span></legend>
+        <label class="radio-option">
+          <input type="radio" name="extra" value="no" checked>
+          <span>No — Solo una fecha por sesión</span>
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="extra" value="si">
+          <span>Sí — Calendarizaré más de una fecha por sesión</span>
+        </label>
+      </fieldset>
+
+      <section id="practicas-container" hidden>
+        <h2>Sesiones de práctica</h2>
+        <p class="hint">Solo se muestran las fechas del día de clase elegido.</p>
+        <p id="hint-extra" class="hint-extra" hidden>
+          Marque el recuadro en las sesiones que necesitará más de una fecha de calendarización
+        </p>
+        <div id="practicas-lista"></div>
+      </section>
+
+      <button type="submit" id="btn-enviar" class="btn-enviar">Enviar calendarización</button>
+    </form>
+
+    <div id="mensaje-exito" class="exito" hidden>
+      <div class="exito-icon">🎉</div>
+      <h2>¡Respuesta enviada con éxito!</h2>
+      <p>
+        El <strong>Laboratorio L-4 de Ingeniería Civil</strong> te agradece
+        por tu participación en esta encuesta de calendarización.
+      </p>
+      <p class="exito-note">Puedes cerrar esta ventana.</p>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+  <script src="datos.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

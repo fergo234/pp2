@@ -1,0 +1,452 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --bg: #f5f7fb;
+  --card: #ffffff;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --danger: #dc2626;
+  --ok: #16a34a;
+
+  /* Color por área (se sobreescribe con la clase en <body>) */
+  --area-primary: #2563eb;
+  --area-light: #dbeafe;
+  --area-accent: #eff6ff;
+  --area-bg-1: rgba(37, 99, 235, 0.06);
+  --area-bg-2: rgba(37, 99, 235, 0.03);
+}
+
+/* ============================================
+   ÁREAS (colores + fondos)
+   ============================================ */
+
+/* GEOTECNIA - Verde */
+body.area-geotecnia {
+  --area-primary: #16a34a;
+  --area-light: #dcfce7;
+  --area-accent: #f0fdf4;
+  --area-bg-1: rgba(22, 163, 74, 0.10);
+  --area-bg-2: rgba(22, 163, 74, 0.05);
+}
+
+/* CONSTRUCCIÓN - Azul */
+body.area-construccion {
+  --area-primary: #2563eb;
+  --area-light: #dbeafe;
+  --area-accent: #eff6ff;
+  --area-bg-1: rgba(37, 99, 235, 0.10);
+  --area-bg-2: rgba(37, 99, 235, 0.05);
+}
+
+/* HIDRÁULICA - Turquesa */
+body.area-hidraulica {
+  --area-primary: #0891b2;
+  --area-light: #cffafe;
+  --area-accent: #ecfeff;
+  --area-bg-1: rgba(8, 145, 178, 0.10);
+  --area-bg-2: rgba(8, 145, 178, 0.05);
+}
+
+/* MATERIALES - Naranja */
+body.area-materiales {
+  --area-primary: #ea580c;
+  --area-light: #ffedd5;
+  --area-accent: #fff7ed;
+  --area-bg-1: rgba(234, 88, 12, 0.10);
+  --area-bg-2: rgba(234, 88, 12, 0.05);
+}
+
+/* TOPOGRAFÍA - Amarillo */
+body.area-topografia {
+  --area-primary: #ca8a04;
+  --area-light: #fef9c3;
+  --area-accent: #fefce8;
+  --area-bg-1: rgba(202, 138, 4, 0.12);
+  --area-bg-2: rgba(202, 138, 4, 0.06);
+}
+
+/* CIENCIAS BÁSICAS - Rosa */
+body.area-ciencias-basicas {
+  --area-primary: #db2777;
+  --area-light: #fce7f3;
+  --area-accent: #fdf2f8;
+  --area-bg-1: rgba(219, 39, 119, 0.10);
+  --area-bg-2: rgba(219, 39, 119, 0.05);
+}
+
+/* ============================================
+   BASE
+   ============================================ */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.55;
+  padding: 32px 16px 64px;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  transition: background 0.4s ease;
+}
+
+/* Fondo decorativo con patrón según área */
+.bg-decor {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 10% 10%, var(--area-bg-1) 0%, transparent 45%),
+    radial-gradient(circle at 90% 90%, var(--area-bg-2) 0%, transparent 45%),
+    radial-gradient(circle at 90% 10%, var(--area-bg-1) 0%, transparent 40%),
+    radial-gradient(circle at 10% 90%, var(--area-bg-2) 0%, transparent 40%);
+  transition: background 0.5s ease;
+}
+
+/* Patrón SVG sutil por área */
+body.area-geotecnia .bg-decor::before,
+body.area-construccion .bg-decor::before,
+body.area-hidraulica .bg-decor::before,
+body.area-materiales .bg-decor::before,
+body.area-topografia .bg-decor::before,
+body.area-ciencias-basicas .bg-decor::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.35;
+  background-repeat: repeat;
+  background-size: 240px 240px;
+}
+
+/* Geotecnia: capas de suelo */
+body.area-geotecnia .bg-decor::before {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'><g fill='none' stroke='%2316a34a' stroke-width='1.5' opacity='0.5'><path d='M0 200 Q60 180 120 200 T240 200'/><path d='M0 220 Q60 200 120 220 T240 220'/><circle cx='60' cy='60' r='4'/><circle cx='180' cy='100' r='6'/><circle cx='100' cy='140' r='3'/><circle cx='200' cy='40' r='5'/></g></svg>");
+}
+
+/* Construcción: estructura/edificios */
+body.area-construccion .bg-decor::before {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'><g fill='none' stroke='%232563eb' stroke-width='1.5' opacity='0.5'><rect x='40' y='80' width='60' height='120'/><rect x='120' y='40' width='80' height='160'/><line x1='40' y1='100' x2='100' y2='100'/><line x1='40' y1='120' x2='100' y2='120'/><line x1='40' y1='140' x2='100' y2='140'/><line x1='40' y1='160' x2='100' y2='160'/><line x1='120' y1='60' x2='200' y2='60'/><line x1='120' y1='80' x2='200' y2='80'/><line x1='120' y1='100' x2='200' y2='100'/><line x1='120' y1='120' x2='200' y2='120'/><line x1='120' y1='140' x2='200' y2='140'/><line x1='120' y1='160' x2='200' y2='160'/></g></svg>");
+}
+
+/* Hidráulica: ondas */
+body.area-hidraulica .bg-decor::before {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'><g fill='none' stroke='%230891b2' stroke-width='1.5' opacity='0.5'><path d='M0 60 Q30 40 60 60 T120 60 T180 60 T240 60'/><path d='M0 120 Q30 100 60 120 T120 120 T180 120 T240 120'/><path d='M0 180 Q30 160 60 180 T120 180 T180 180 T240 180'/></g></svg>");
+}
+
+/* Materiales: átomos/cristales */
+body.area-materiales .bg-decor::before {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'><g fill='none' stroke='%23ea580c' stroke-width='1.5' opacity='0.5'><circle cx='60' cy='60' r='18'/><circle cx='180' cy='60' r='18'/><circle cx='60' cy='180' r='18'/><circle cx='180' cy='180' r='18'/><circle cx='120' cy='120' r='22'/><line x1='60' y1='60' x2='120' y2='120'/><line x1='180' y1='60' x2='120' y2='120'/><line x1='60' y1='180' x2='120' y2='120'/><line x1='180' y1='180' x2='120' y2='120'/></g></svg>");
+}
+
+/* Topografía: curvas de nivel */
+body.area-topografia .bg-decor::before {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'><g fill='none' stroke='%23ca8a04' stroke-width='1.5' opacity='0.5'><ellipse cx='120' cy='120' rx='100' ry='60'/><ellipse cx='120' cy='120' rx='75' ry='45'/><ellipse cx='120' cy='120' rx='50' ry='30'/><ellipse cx='120' cy='120' rx='25' ry='15'/></g></svg>");
+}
+
+/* Ciencias Básicas: fórmulas/átomos */
+body.area-ciencias-basicas .bg-decor::before {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'><g fill='none' stroke='%23db2777' stroke-width='1.5' opacity='0.5'><circle cx='120' cy='120' r='8'/><ellipse cx='120' cy='120' rx='60' ry='22'/><ellipse cx='120' cy='120' rx='60' ry='22' transform='rotate(60 120 120)'/><ellipse cx='120' cy='120' rx='60' ry='22' transform='rotate(-60 120 120)'/><circle cx='120' cy='60' r='4' fill='%23db2777'/><circle cx='180' cy='150' r='4' fill='%23db2777'/><circle cx='60' cy='150' r='4' fill='%23db2777'/></g></svg>");
+}
+
+.container {
+  max-width: 820px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.header {
+  text-align: center;
+  margin-bottom: 24px;
+  padding: 28px 20px 24px;
+  background: var(--card);
+  border-radius: 18px;
+  border-top: 5px solid var(--area-primary);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  transition: border-color 0.4s ease;
+}
+.header-icon { font-size: 2.4rem; margin-bottom: 6px; }
+.header h1 {
+  font-size: 1.9rem;
+  color: var(--area-primary);
+  margin-bottom: 6px;
+  letter-spacing: -0.02em;
+  transition: color 0.4s ease;
+}
+.subtitle {
+  color: var(--muted);
+  font-size: 1rem;
+  font-weight: 500;
+}
+.lab-badge {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 5px 14px;
+  background: var(--area-accent);
+  color: var(--area-primary);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: all 0.4s ease;
+}
+
+/* ============================================
+   INTRO CARD
+   ============================================ */
+.intro-card {
+  background: var(--area-accent);
+  border-left: 5px solid var(--area-primary);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-bottom: 24px;
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 14px;
+  align-items: flex-start;
+  color: var(--text);
+  font-size: 0.94rem;
+  line-height: 1.55;
+  transition: all 0.4s ease;
+}
+.intro-icon { font-size: 1.6rem; line-height: 1; }
+.intro-card strong { color: var(--area-primary); }
+.intro-card em { font-style: italic; color: var(--text); }
+.intro-note {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(0,0,0,0.1);
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+/* ============================================
+   FORM
+   ============================================ */
+form {
+  background: var(--card);
+  padding: 32px;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+.field { margin-bottom: 22px; }
+.field label, .field legend {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 0.96rem;
+}
+.req { color: var(--danger); }
+
+input[type="text"],
+select,
+input.flatpickr-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 1rem;
+  background: #fff;
+  color: var(--text);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+input[type="text"]:focus,
+select:focus,
+input.flatpickr-input:focus {
+  outline: none;
+  border-color: var(--area-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--area-primary) 18%, transparent);
+}
+
+/* Tag de área */
+.area-tag {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 5px 12px;
+  background: var(--area-light);
+  color: var(--area-primary);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+/* Radios */
+.radio-group { border: none; padding: 0; }
+.radio-group legend { margin-bottom: 12px; }
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+.radio-option:hover { background: var(--area-accent); }
+.radio-option input[type="radio"] {
+  accent-color: var(--area-primary);
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+.radio-option:has(input:checked) {
+  border-color: var(--area-primary);
+  background: var(--area-accent);
+}
+
+/* Prácticas */
+#practicas-container {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 2px dashed var(--border);
+}
+#practicas-container h2 {
+  font-size: 1.15rem;
+  color: var(--area-primary);
+  margin-bottom: 6px;
+  transition: color 0.4s ease;
+}
+.hint {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+.hint-extra {
+  background: var(--area-accent);
+  border-left: 4px solid var(--area-primary);
+  color: var(--text);
+  font-size: 0.92rem;
+  font-weight: 500;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 18px;
+  transition: all 0.4s ease;
+}
+
+.practica {
+  background: #fafbfd;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 12px;
+  transition: all 0.2s ease;
+}
+.practica:hover { border-color: var(--area-primary); }
+.practica.practica-con-extra {
+  background: var(--area-accent);
+  border-color: var(--area-primary);
+}
+
+.practica-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--area-primary);
+}
+.practica-header input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--area-primary);
+  margin-top: 3px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.practica-nombre { line-height: 1.4; }
+
+.practica-nombre-static {
+  font-weight: 600;
+  color: var(--area-primary);
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.fechas { margin-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+.fecha-row { display: grid; grid-template-columns: 90px 1fr; align-items: center; gap: 10px; }
+.fecha-row label {
+  font-size: 0.88rem;
+  color: var(--muted);
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Botón */
+.btn-enviar {
+  width: 100%;
+  padding: 15px;
+  background: var(--area-primary);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.05s;
+  margin-top: 28px;
+  letter-spacing: 0.01em;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--area-primary) 35%, transparent);
+}
+.btn-enviar:hover:not(:disabled) { filter: brightness(0.92); }
+.btn-enviar:active:not(:disabled) { transform: translateY(1px); }
+.btn-enviar:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Éxito */
+.exito {
+  background: var(--card);
+  padding: 48px 28px;
+  border-radius: 18px;
+  text-align: center;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  border-top: 5px solid var(--area-primary);
+}
+.exito-icon { font-size: 3rem; margin-bottom: 12px; }
+.exito h2 {
+  color: var(--ok);
+  margin-bottom: 14px;
+  font-size: 1.4rem;
+}
+.exito p {
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.exito p strong { color: var(--area-primary); }
+.exito-note {
+  margin-top: 18px;
+  color: var(--muted) !important;
+  font-size: 0.88rem !important;
+}
+
+/* Flatpickr */
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover {
+  background: var(--area-primary) !important;
+  border-color: var(--area-primary) !important;
+}
+.flatpickr-day.today { border-color: var(--area-primary) !important; }
+
+/* Responsive */
+@media (max-width: 520px) {
+  body { padding: 16px 10px 40px; }
+  form { padding: 20px; }
+  .header h1 { font-size: 1.5rem; }
+  .intro-card { grid-template-columns: 1fr; gap: 8px; }
+  .fecha-row { grid-template-columns: 1fr; gap: 4px; }
+}
