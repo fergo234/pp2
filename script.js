@@ -95,7 +95,26 @@ function initFlatpickrs() {
     flatpickr(inp, cfg);
   });
 }
+// ---------- Obtener la primera fecha disponible del día elegido ----------
+function getPrimeraFechaDisponible(dia) {
+  if (!dia) return null;
+  const dayNum = DIAS_SEMANA[dia];
+  const inicio = new Date(CONFIG.FECHA_INICIO + "T12:00:00");
+  const fin = new Date(CONFIG.FECHA_FIN + "T12:00:00");
+  const cursor = new Date(inicio);
 
+  while (cursor <= fin) {
+    if (cursor.getDay() === dayNum) {
+      const y = cursor.getFullYear();
+      const m = String(cursor.getMonth() + 1).padStart(2, "0");
+      const d = String(cursor.getDate()).padStart(2, "0");
+      const iso = `${y}-${m}-${d}`;
+      if (!FECHAS_EXCLUIDAS.includes(iso)) return iso;
+    }
+    cursor.setDate(cursor.getDate() + 1);
+  }
+  return null;
+}
 // ---------- Render prácticas ----------
 function renderPracticas() {
   const materia = selMateria.value;
@@ -147,7 +166,7 @@ function renderPracticas() {
     practicasLista.appendChild(div);
   });
 
-  practicasSection.hidden = false;
+ practicasSection.hidden = false;
 
   if (modoExtra) {
     $$(".check-extra").forEach((chk) => {
@@ -156,6 +175,15 @@ function renderPracticas() {
   }
 
   initFlatpickrs();
+
+  // ✨ Auto-rellenar la primera práctica con la primera fecha disponible
+  const primeraFecha = getPrimeraFechaDisponible(dia);
+  if (primeraFecha) {
+    const primerInput = practicasLista.querySelector(".practica .fecha-input");
+    if (primerInput && primerInput._flatpickr) {
+      primerInput._flatpickr.setDate(primeraFecha, true);
+    }
+  }
 }
 
 function onCheckExtraChange(e) {
