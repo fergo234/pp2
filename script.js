@@ -178,14 +178,21 @@ function renderPracticas() {
 
   // ✨ Auto-rellenar la primera práctica con la primera fecha disponible
   const primeraFecha = getPrimeraFechaDisponible(dia);
+  console.log("🕵️ Día:", dia, "| Primera fecha disponible:", primeraFecha);
+
   if (primeraFecha) {
     const primerInput = practicasLista.querySelector(".practica .fecha-input");
+    console.log("🕵️ Primer input encontrado:", primerInput);
+    console.log("🕵️ ¿Tiene _flatpickr?:", primerInput ? !!primerInput._flatpickr : "input no encontrado");
+
     if (primerInput && primerInput._flatpickr) {
       primerInput._flatpickr.setDate(primeraFecha, true);
+      console.log("✅ Fecha asignada:", primerInput.value);
+    } else {
+      console.warn("⚠️ No se pudo asignar la fecha automáticamente");
     }
   }
 }
-
 function onCheckExtraChange(e) {
   const chk = e.target;
   const idx = chk.dataset.idx;
