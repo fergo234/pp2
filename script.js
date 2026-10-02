@@ -16,7 +16,9 @@ const btnEnviar = $("#btn-enviar");
 const mensajeExito = $("#mensaje-exito");
 const areaTag = $("#area-tag");
 
-// ---------- Área visual ----------
+// ============================================
+// ÁREA VISUAL
+// ============================================
 function slugify(str) {
   return str
     .toLowerCase()
@@ -44,7 +46,9 @@ function aplicarArea() {
   areaTag.textContent = "Área: " + area;
 }
 
-// ---------- Cargar materias ----------
+// ============================================
+// CARGAR MATERIAS
+// ============================================
 function initMaterias() {
   Object.keys(MATERIAS).forEach((nombre) => {
     const opt = document.createElement("option");
@@ -54,7 +58,9 @@ function initMaterias() {
   });
 }
 
-// ---------- Flatpickr config ----------
+// ============================================
+// FLATPICKR CONFIG
+// ============================================
 function getFlatpickrConfig() {
   const dia = selDia.value;
   if (!dia) return null;
@@ -96,7 +102,9 @@ function initFlatpickrs() {
   });
 }
 
-// ---------- Obtener la primera fecha disponible ----------
+// ============================================
+// PRIMERA FECHA DISPONIBLE
+// ============================================
 function getPrimeraFechaDisponible(dia) {
   if (!dia) return null;
   const dayNum = DIAS_SEMANA[dia];
@@ -117,7 +125,60 @@ function getPrimeraFechaDisponible(dia) {
   return null;
 }
 
-// ---------- Render prácticas ----------
+// ============================================
+// HELPERS: leer/escribir fechas de un input flatpickr
+// ============================================
+function leerFechaDeInput(inp) {
+  const fp = inp._flatpickr;
+  if (!fp || fp.input !== inp || !fp.selectedDates[0]) return null;
+  return fp.selectedDates[0].getTime();
+}
+
+function setFechaEnInput(inp, timestamp) {
+  const fp = inp._flatpickr;
+  if (!fp || fp.input !== inp) return;
+  if (timestamp === null || timestamp === undefined) {
+    fp.clear();
+  } else {
+    fp.setDate(new Date(timestamp), true);
+  }
+}
+
+// ============================================
+// SNAPSHOT: guardar y restaurar fechas de TODAS las prácticas
+// ============================================
+function tomarSnapshot() {
+  const snap = [];
+  $$(".practica").forEach((pDiv) => {
+    const fechas = [];
+    pDiv.querySelectorAll(".fecha-input").forEach((inp) => {
+      fechas.push(leerFechaDeInput(inp));
+    });
+    snap.push({
+      practica: pDiv.dataset.practica,
+      fechas,
+    });
+  });
+  return snap;
+}
+
+function restaurarSnapshot(snap) {
+  $$(".practica").forEach((pDiv) => {
+    const saved = snap.find((s) => s.practica === pDiv.dataset.practica);
+    if (!saved) return;
+    let i = 0;
+    pDiv.querySelectorAll(".fecha-input").forEach((inp) => {
+      if (i < saved.fechas.length) {
+        setFechaEnInput(inp, saved.fechas[i]);
+      }
+      i++;
+    });
+  });
+}
+
+// ============================================
+// RENDER PRÁCTICAS
+// ============================================
 function renderPracticas() {
   const materia = selMateria.value;
   const dia = selDia.value;
@@ -187,13 +248,21 @@ function renderPracticas() {
     }
   }
 }
+
+// ============================================
+// CHECKBOX "MÁS FECHAS" — con snapshot
+// ============================================
 function onCheckExtraChange(e) {
   const chk = e.target;
   const idx = chk.dataset.idx;
-  const fechasDiv = document.querySelector(`.fechas[data-idx="${idx}"]`);
-  if (!fechasDiv) return;
   const practicaDiv = chk.closest(".practica");
+  const fechasDiv = practicaDiv.querySelector(`.fechas[data-idx="${idx}"]`);
+  if (!fechasDiv) return;
 
+  // 1. Guardar TODAS las fechas actuales
+  const snapshot = tomarSnapshot();
+
+  // 2. Modificar SOLO la práctica clickeada
   if (chk.checked) {
     practicaDiv.classList.add("practica-con-extra");
     const existentes = fechasDiv.querySelectorAll(".fecha-row").length;
@@ -207,7 +276,7 @@ function onCheckExtraChange(e) {
       fechasDiv.appendChild(row);
     }
 
-    // 🔧 Solo inicializar los inputs NUEVOS de ESTA práctica
+    // Inicializar SOLO los inputs nuevos de esta práctica
     const cfg = getFlatpickrConfig();
     if (cfg) {
       fechasDiv.querySelectorAll(".fecha-input").forEach((inp) => {
@@ -226,9 +295,14 @@ function onCheckExtraChange(e) {
       }
     });
   }
+
+  // 3. Restaurar TODAS las fechas guardadas
+  restaurarSnapshot(snapshot);
 }
 
-// ---------- Helper: formatea una fecha a dd/mm/aaaa ----------
+// ============================================
+// FORMATEAR FECHA dd/mm/aaaa
+// ============================================
 function formatearFecha(d) {
   const dia = String(d.getDate()).padStart(2, "0");
   const mes = String(d.getMonth() + 1).padStart(2, "0");
@@ -236,23 +310,20 @@ function formatearFecha(d) {
   return `${dia}/${mes}/${anio}`;
 }
 
-// ---------- Recolectar ----------
+// ============================================
+// RECOLECTAR DATOS
+// ============================================
 function recolectarDatos() {
   const practicas = [];
 
   $$(".practica").forEach((div) => {
     const nombre = div.dataset.practica;
     const fechas = [];
-    const yaProcesados = new Set(); // evita duplicados
 
     div.querySelectorAll(".fecha-input").forEach((inp) => {
       const fp = inp._flatpickr;
-      if (!fp || !fp.selectedDates[0]) return;
-      // ⚠️ Solo procesar el input ORIGINAL (no el altInput de flatpickr)
-      if (fp.input !== inp) return;
-      if (yaProcesados.has(inp)) return;
-      yaProcesados.add(inp);
-
+      if (!fp || fp.input !== inp) return; // solo input original
+      if (!fp.selectedDates[0]) return;
       fechas.push(formatearFecha(fp.selectedDates[0]));
     });
 
@@ -271,7 +342,9 @@ function recolectarDatos() {
   };
 }
 
-// ---------- Enviar ----------
+// ============================================
+// ENVIAR FORMULARIO
+// ============================================
 async function enviarFormulario(e) {
   e.preventDefault();
 
@@ -290,7 +363,7 @@ async function enviarFormulario(e) {
   }
 
   const datos = recolectarDatos();
-  console.log("📤 Datos a enviar:", datos); // 👈 para depurar
+  console.log("📤 Datos a enviar:", datos);
 
   btnEnviar.disabled = true;
   btnEnviar.textContent = "Enviando...";
@@ -320,7 +393,9 @@ async function enviarFormulario(e) {
   }
 }
 
-// ---------- Init ----------
+// ============================================
+// INIT
+// ============================================
 function init() {
   initMaterias();
 
