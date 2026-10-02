@@ -145,7 +145,7 @@ function setFechaEnInput(inp, timestamp) {
 }
 
 // ============================================
-// SNAPSHOT: guardar y restaurar fechas de TODAS las prácticas
+// SNAPSHOT: guardar y restaurar fechas
 // ============================================
 function tomarSnapshot() {
   const snap = [];
@@ -270,7 +270,7 @@ function onCheckExtraChange(e) {
       const row = document.createElement("div");
       row.className = "fecha-row";
       row.innerHTML = `
-        <label>Fecha ${i + 1}</label>
+        <label>Fecha ${i + 1} <span class="opcional">(opcional)</span></label>
         <input type="text" class="fecha-input" placeholder="Selecciona fecha...">
       `;
       fechasDiv.appendChild(row);
@@ -323,7 +323,7 @@ function recolectarDatos() {
     div.querySelectorAll(".fecha-input").forEach((inp) => {
       const fp = inp._flatpickr;
       if (!fp || fp.input !== inp) return; // solo input original
-      if (!fp.selectedDates[0]) return;
+      if (!fp.selectedDates[0]) return;    // ignorar vacías
       fechas.push(formatearFecha(fp.selectedDates[0]));
     });
 
@@ -352,14 +352,28 @@ async function enviarFormulario(e) {
   if (!inGrupo.value.trim()) return alert("⚠️ Escribe el grupo.");
   if (!selDia.value) return alert("⚠️ Selecciona el día de clase.");
 
+  // ✅ Validación: al menos 1 fecha por sesión (máx 6, extras opcionales)
   const faltantes = [];
   $$(".practica").forEach((div) => {
-    const firstInput = div.querySelector(".fecha-input");
-    const fp = firstInput?._flatpickr;
-    if (!fp || !fp.selectedDates[0]) faltantes.push(div.dataset.practica);
+    const fechasValidas = [];
+    div.querySelectorAll(".fecha-input").forEach((inp) => {
+      const fp = inp._flatpickr;
+      if (!fp || fp.input !== inp) return;
+      if (fp.selectedDates[0]) fechasValidas.push(fp.selectedDates[0]);
+    });
+
+    if (fechasValidas.length === 0) {
+      faltantes.push(div.dataset.practica);
+    } else if (fechasValidas.length > CONFIG.MAX_FECHAS_EXTRA) {
+      faltantes.push(div.dataset.practica + " (máximo 6 fechas)");
+    }
   });
+
   if (faltantes.length) {
-    return alert("⚠️ Faltan fechas en:\n\n• " + faltantes.join("\n• "));
+    return alert(
+      "⚠️ Debes asignar al menos UNA fecha a cada sesión.\n\n" +
+      "Faltan fechas en:\n\n• " + faltantes.join("\n• ")
+    );
   }
 
   const datos = recolectarDatos();
