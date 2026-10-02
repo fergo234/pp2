@@ -187,7 +187,6 @@ function renderPracticas() {
     }
   }
 }
-
 function onCheckExtraChange(e) {
   const chk = e.target;
   const idx = chk.dataset.idx;
@@ -207,6 +206,15 @@ function onCheckExtraChange(e) {
       `;
       fechasDiv.appendChild(row);
     }
+
+    // 🔧 Solo inicializar los inputs NUEVOS de ESTA práctica
+    const cfg = getFlatpickrConfig();
+    if (cfg) {
+      fechasDiv.querySelectorAll(".fecha-input").forEach((inp) => {
+        if (inp._flatpickr) return;
+        flatpickr(inp, cfg);
+      });
+    }
   } else {
     practicaDiv.classList.remove("practica-con-extra");
     const rows = fechasDiv.querySelectorAll(".fecha-row");
@@ -218,8 +226,6 @@ function onCheckExtraChange(e) {
       }
     });
   }
-
-  initFlatpickrs();
 }
 
 // ---------- Helper: formatea una fecha a dd/mm/aaaa ----------
