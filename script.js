@@ -92,6 +92,8 @@ function initFlatpickrs() {
   const cfg = getFlatpickrConfig();
   if (!cfg) return;
   $$(".fecha-input").forEach((inp) => {
+    // ⚠️ Si ya tiene flatpickr, no lo reinicialices
+    if (inp._flatpickr) return;
     flatpickr(inp, cfg);
   });
 }
@@ -234,7 +236,14 @@ function recolectarDatos() {
     const nombre = div.dataset.practica;
     const fechas = [];
     div.querySelectorAll(".fecha-input").forEach((inp) => {
-      if (inp.value) fechas.push(inp.value);
+      // ⚠️ Solo leer el input original (ignorar el altInput de flatpickr)
+      const fp = inp._flatpickr;
+      if (!fp || !fp.selectedDates[0]) return;
+      const d = fp.selectedDates[0];
+      const dia = String(d.getDate()).padStart(2, "0");
+      const mes = String(d.getMonth() + 1).padStart(2, "0");
+      const anio = d.getFullYear();
+      fechas.push(`${dia}/${mes}/${anio}`);   // 👈 formato dd/mm/aaaa
     });
     practicas.push({ nombre, fechas });
   });
@@ -260,10 +269,11 @@ async function enviarFormulario(e) {
   if (!selDia.value) return alert("⚠️ Selecciona el día de clase.");
 
   const faltantes = [];
-  $$(".practica").forEach((div) => {
-    const first = div.querySelector(".fecha-input")?.value;
-    if (!first) faltantes.push(div.dataset.practica);
-  });
+$$(".practica").forEach((div) => {
+  const firstInput = div.querySelector(".fecha-input");
+  const fp = firstInput?._flatpickr;
+  if (!fp || !fp.selectedDates[0]) faltantes.push(div.dataset.practica);
+});
   if (faltantes.length) {
     return alert("⚠️ Faltan fechas en:\n\n• " + faltantes.join("\n• "));
   }
