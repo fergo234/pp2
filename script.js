@@ -26,7 +26,6 @@ function slugify(str) {
 }
 
 function aplicarArea() {
-  // Limpia clases previas
   [...document.body.classList].forEach((c) => {
     if (c.startsWith("area-")) document.body.classList.remove(c);
   });
@@ -92,12 +91,12 @@ function initFlatpickrs() {
   const cfg = getFlatpickrConfig();
   if (!cfg) return;
   $$(".fecha-input").forEach((inp) => {
-    // ⚠️ Si ya tiene flatpickr, no lo reinicialices
     if (inp._flatpickr) return;
     flatpickr(inp, cfg);
   });
 }
-// ---------- Obtener la primera fecha disponible del día elegido ----------
+
+// ---------- Obtener la primera fecha disponible ----------
 function getPrimeraFechaDisponible(dia) {
   if (!dia) return null;
   const dayNum = DIAS_SEMANA[dia];
@@ -117,6 +116,7 @@ function getPrimeraFechaDisponible(dia) {
   }
   return null;
 }
+
 // ---------- Render prácticas ----------
 function renderPracticas() {
   const materia = selMateria.value;
@@ -168,7 +168,7 @@ function renderPracticas() {
     practicasLista.appendChild(div);
   });
 
- practicasSection.hidden = false;
+  practicasSection.hidden = false;
 
   if (modoExtra) {
     $$(".check-extra").forEach((chk) => {
@@ -178,23 +178,16 @@ function renderPracticas() {
 
   initFlatpickrs();
 
-  // ✨ Auto-rellenar la primera práctica con la primera fecha disponible
+  // ✨ Auto-rellenar la primera práctica
   const primeraFecha = getPrimeraFechaDisponible(dia);
-  console.log("🕵️ Día:", dia, "| Primera fecha disponible:", primeraFecha);
-
   if (primeraFecha) {
     const primerInput = practicasLista.querySelector(".practica .fecha-input");
-    console.log("🕵️ Primer input encontrado:", primerInput);
-    console.log("🕵️ ¿Tiene _flatpickr?:", primerInput ? !!primerInput._flatpickr : "input no encontrado");
-
     if (primerInput && primerInput._flatpickr) {
       primerInput._flatpickr.setDate(primeraFecha, true);
-      console.log("✅ Fecha asignada:", primerInput.value);
-    } else {
-      console.warn("⚠️ No se pudo asignar la fecha automáticamente");
     }
   }
 }
+
 function onCheckExtraChange(e) {
   const chk = e.target;
   const idx = chk.dataset.idx;
@@ -229,22 +222,34 @@ function onCheckExtraChange(e) {
   initFlatpickrs();
 }
 
+// ---------- Helper: formatea una fecha a dd/mm/aaaa ----------
+function formatearFecha(d) {
+  const dia = String(d.getDate()).padStart(2, "0");
+  const mes = String(d.getMonth() + 1).padStart(2, "0");
+  const anio = d.getFullYear();
+  return `${dia}/${mes}/${anio}`;
+}
+
 // ---------- Recolectar ----------
 function recolectarDatos() {
   const practicas = [];
+
   $$(".practica").forEach((div) => {
     const nombre = div.dataset.practica;
     const fechas = [];
+    const yaProcesados = new Set(); // evita duplicados
+
     div.querySelectorAll(".fecha-input").forEach((inp) => {
-      // ⚠️ Solo leer el input original (ignorar el altInput de flatpickr)
       const fp = inp._flatpickr;
       if (!fp || !fp.selectedDates[0]) return;
-      const d = fp.selectedDates[0];
-      const dia = String(d.getDate()).padStart(2, "0");
-      const mes = String(d.getMonth() + 1).padStart(2, "0");
-      const anio = d.getFullYear();
-      fechas.push(`${dia}/${mes}/${anio}`);   // 👈 formato dd/mm/aaaa
+      // ⚠️ Solo procesar el input ORIGINAL (no el altInput de flatpickr)
+      if (fp.input !== inp) return;
+      if (yaProcesados.has(inp)) return;
+      yaProcesados.add(inp);
+
+      fechas.push(formatearFecha(fp.selectedDates[0]));
     });
+
     practicas.push({ nombre, fechas });
   });
 
@@ -269,16 +274,17 @@ async function enviarFormulario(e) {
   if (!selDia.value) return alert("⚠️ Selecciona el día de clase.");
 
   const faltantes = [];
-$$(".practica").forEach((div) => {
-  const firstInput = div.querySelector(".fecha-input");
-  const fp = firstInput?._flatpickr;
-  if (!fp || !fp.selectedDates[0]) faltantes.push(div.dataset.practica);
-});
+  $$(".practica").forEach((div) => {
+    const firstInput = div.querySelector(".fecha-input");
+    const fp = firstInput?._flatpickr;
+    if (!fp || !fp.selectedDates[0]) faltantes.push(div.dataset.practica);
+  });
   if (faltantes.length) {
     return alert("⚠️ Faltan fechas en:\n\n• " + faltantes.join("\n• "));
   }
 
   const datos = recolectarDatos();
+  console.log("📤 Datos a enviar:", datos); // 👈 para depurar
 
   btnEnviar.disabled = true;
   btnEnviar.textContent = "Enviando...";
@@ -294,7 +300,6 @@ $$(".practica").forEach((div) => {
         body: params.toString(),
       });
     } else {
-      console.log("📤 Datos a enviar:", datos);
       await new Promise((r) => setTimeout(r, 500));
     }
 
